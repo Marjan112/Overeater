@@ -1,19 +1,23 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <termcolor.hpp>
+#include <cstring>
+#include <arpa/inet.h>
 
 static constexpr float GRID_SIZE = 50.f;
-static constexpr size_t SCREEN_WIDTH = 1152;
-static constexpr size_t SCREEN_HEIGHT = 864;
+static constexpr int SCREEN_WIDTH = 1152;
+static constexpr int SCREEN_HEIGHT = 864;
 
 sf::Clock delta_clock;
 sf::Vector2f velocity;
 float delta_time;
-static float fish_width = 76.0f, fish_height = 162.0f, worm_width = 50.0f, worm_height = 50.0f, mov_speed = 700.f;
-static size_t score = 0;
+float fish_width, fish_height, worm_width, worm_height;
+static float mov_speed = 700.f;
+static int score = 0;
 
 template<typename StreamT, typename... ArgsT>
 void print(StreamT& stream, ArgsT&&... args) {
@@ -26,7 +30,48 @@ void print_info(ArgsT&&... args) {
 	print(std::cout, termcolor::green<char>, "[INFO]: ", termcolor::reset<char>, args...);
 }
 
+template<typename... ArgsT>
+void print_error(ArgsT&&... args) {
+	print(std::cerr, termcolor::red<char>, "[ERROR]: ", termcolor::reset<char>, args...);
+}
+
+sf::Vector2i get_dimension_of_image(const std::string& filepath) {
+	std::ifstream image(filepath);
+	sf::Vector2i dimension;
+
+	if(!image.good()) {
+		print_error("Could not open \"", filepath, "\". Reason: ", strerror(errno));
+		exit(1);
+	}
+
+	image.seekg(16);
+	image.read((char*)&dimension.x, 4);
+	image.read((char*)&dimension.y, 4);
+
+	dimension.x = ntohl(dimension.x);
+	dimension.y = ntohl(dimension.y);
+	
+	return dimension;
+}
+
 int main() {
+	const std::string resource_font = "resources/fonts/Roboto-Bold.ttf";
+	const std::string resource_fish_up = "resources/img/fish_up.png";
+	const std::string resource_worm = "resources/img/worm.png";
+	const std::string resource_pou_eating = "resources/sound/pou_eating.wav";
+
+	fish_width = get_dimension_of_image(resource_fish_up).x;
+	fish_height = get_dimension_of_image(resource_fish_up).y;
+
+	worm_width = get_dimension_of_image(resource_worm).x;
+	worm_height = get_dimension_of_image(resource_worm).y;
+
+	print_info("fish_width = ", fish_width, "px");
+	print_info("fish_height = ", fish_height, "px");
+
+	print_info("worm_width = ", worm_width, "px");
+	print_info("worm_height = ", worm_height, "px");
+
 	sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "2D Zderonja", sf::Style::Close | sf::Style::Resize);
 	sf::RectangleShape fish(sf::Vector2f(fish_width, fish_height));
 	sf::RectangleShape worm(sf::Vector2f(worm_width, worm_height));
@@ -38,7 +83,7 @@ int main() {
 	print_info("START_Y = ", START_Y);
 
 	sf::Font font;
-	font.loadFromFile("resources/fonts/Roboto-Bold.ttf");
+	font.loadFromFile(resource_font);
 
 	sf::Text text;
 	text.setFont(font);
@@ -50,8 +95,8 @@ int main() {
 
 	sf::Texture fish_texture;
 	sf::Texture worm_texture;
-	fish_texture.loadFromFile("resources/img/fish_up.png");
-	worm_texture.loadFromFile("resources/img/worm.png");
+	fish_texture.loadFromFile(resource_fish_up);
+	worm_texture.loadFromFile(resource_worm);
 
 	fish.setTexture(&fish_texture);
 	fish.setPosition(START_X, START_Y);
@@ -59,7 +104,7 @@ int main() {
 	srand(time(nullptr));
 
 	sf::SoundBuffer buf;
-	buf.loadFromFile("resources/sound/pou_eating.wav");
+	buf.loadFromFile(resource_pou_eating);
 	sf::Sound bip;
 	bip.setBuffer(buf);
 	bip.setVolume(50);
