@@ -2,11 +2,15 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <thread>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <termcolor.hpp>
 #include <cstring>
 #include <arpa/inet.h>
+
+using namespace std::chrono_literals;
 
 static constexpr float GRID_SIZE = 50.f;
 static constexpr int SCREEN_WIDTH = 1152;
@@ -72,7 +76,7 @@ int main() {
 	print_info("worm_width = ", worm_width, "px");
 	print_info("worm_height = ", worm_height, "px");
 
-	sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "2D Zderonja", sf::Style::Close | sf::Style::Resize);
+	sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "2D Zderonja", sf::Style::Close);
 	sf::RectangleShape fish(sf::Vector2f(fish_width, fish_height));
 	sf::RectangleShape worm(sf::Vector2f(worm_width, worm_height));
 
@@ -127,19 +131,16 @@ int main() {
 	while (window.isOpen()) {
 		delta_time = delta_clock.restart().asSeconds();
 
-		while (window.pollEvent(e)) {
-			switch (e.type) {
-			case sf::Event::Closed:
-				window.close();
-				break;
-			case sf::Event::Resized:
-				window.clear();
-				break;
+		while(window.pollEvent(e)) {
+			switch(e.type) {
+				case sf::Event::Closed: {
+					window.close();
+					break;
+				}
 			}
 		}
 
-		velocity.x = 0;
-		velocity.y = 0;
+		velocity.x = velocity.y = 0;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
 			fish.setRotation(-90.f);
