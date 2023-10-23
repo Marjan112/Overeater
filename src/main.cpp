@@ -12,14 +12,11 @@
 
 using namespace std::chrono_literals;
 
-static constexpr float GRID_SIZE = 50.f;
-static constexpr int SCREEN_WIDTH = 1152;
-static constexpr int SCREEN_HEIGHT = 864;
+static const sf::Vector2i SCREEN_DIMENSION(1152, 864);
 
 sf::Clock delta_clock;
 sf::Vector2f velocity;
 float delta_time;
-float fish_width, fish_height, worm_width, worm_height;
 static float mov_speed = 700.f;
 static int score = 0;
 
@@ -64,27 +61,23 @@ int main() {
 	const std::string resource_worm = "resources/img/worm.png";
 	const std::string resource_pou_eating = "resources/sound/pou_eating.wav";
 
-	fish_width = get_dimension_of_image(resource_fish_up).x;
-	fish_height = get_dimension_of_image(resource_fish_up).y;
+	sf::Vector2f fish_dimension = static_cast<sf::Vector2f>(get_dimension_of_image(resource_fish_up));
+	sf::Vector2f worm_dimension = static_cast<sf::Vector2f>(get_dimension_of_image(resource_worm));
 
-	worm_width = get_dimension_of_image(resource_worm).x;
-	worm_height = get_dimension_of_image(resource_worm).y;
+	print_info("fish_dimension.x = ", fish_dimension.x, "px");
+	print_info("fish_dimension.y = ", fish_dimension.y, "px");
 
-	print_info("fish_width = ", fish_width, "px");
-	print_info("fish_height = ", fish_height, "px");
+	print_info("worm_dimension.x = ", worm_dimension.x, "px");
+	print_info("worm_dimension.y = ", worm_dimension.y, "px");
 
-	print_info("worm_width = ", worm_width, "px");
-	print_info("worm_height = ", worm_height, "px");
+	sf::RenderWindow window(sf::VideoMode(SCREEN_DIMENSION.x, SCREEN_DIMENSION.y), "Overeater", sf::Style::Close);
+	sf::RectangleShape fish(fish_dimension);
+	sf::RectangleShape worm(worm_dimension);
 
-	sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "2D Zderonja", sf::Style::Close);
-	sf::RectangleShape fish(sf::Vector2f(fish_width, fish_height));
-	sf::RectangleShape worm(sf::Vector2f(worm_width, worm_height));
+	const sf::Vector2f START_POS(SCREEN_DIMENSION.x / 2 - fish_dimension.x / 2, SCREEN_DIMENSION.y / 2 - fish_dimension.y / 2);
 
-	const float START_X = SCREEN_WIDTH / 2 - fish_width / 2;
-	const float START_Y = SCREEN_HEIGHT / 2 - fish_height / 2;
-
-	print_info("START_X = ", START_X);
-	print_info("START_Y = ", START_Y);
+	print_info("START_POS.x = ", START_POS.x);
+	print_info("START_POS.y = ", START_POS.y);
 
 	sf::Font font;
 	font.loadFromFile(resource_font);
@@ -95,7 +88,7 @@ int main() {
 	text.setFillColor(sf::Color::Red);
 	text.setStyle(sf::Text::Bold);
 	text.setString("Poeni: " + std::to_string(score));
-	text.setPosition(SCREEN_WIDTH / 2 - text.getGlobalBounds().width / 2, SCREEN_HEIGHT / 2 - text.getGlobalBounds().height / 2);
+	text.setPosition(SCREEN_DIMENSION.x / 2 - text.getGlobalBounds().width / 2, SCREEN_DIMENSION.y / 2 - text.getGlobalBounds().height / 2);
 
 	sf::Texture fish_texture;
 	sf::Texture worm_texture;
@@ -103,9 +96,7 @@ int main() {
 	worm_texture.loadFromFile(resource_worm);
 
 	fish.setTexture(&fish_texture);
-	fish.setPosition(START_X, START_Y);
-
-	srand(time(nullptr));
+	fish.setPosition(START_POS);
 
 	sf::SoundBuffer buf;
 	buf.loadFromFile(resource_pou_eating);
@@ -113,18 +104,19 @@ int main() {
 	bip.setBuffer(buf);
 	bip.setVolume(50);
 
-	float worm_x = static_cast<float>(rand() % SCREEN_WIDTH);
-	float worm_y = static_cast<float>(rand() % SCREEN_HEIGHT);
+	srand(time(nullptr));
 
-	worm.setPosition(worm_x, worm_y);
+	sf::Vector2f worm_pos(static_cast<float>(rand() % SCREEN_DIMENSION.x), static_cast<float>(rand() % SCREEN_DIMENSION.y));
+
+	worm.setPosition(worm_pos.x, worm_pos.y);
 	worm.setTexture(&worm_texture);
 
 	sf::FloatRect next_pos;
 	sf::FloatRect fish_bounds;
 	sf::FloatRect worm_bounds;
 
-	print_info("SCREEN_WIDTH = ", SCREEN_WIDTH);
-	print_info("SCREEN_HEIGHT = ", SCREEN_HEIGHT);
+	print_info("SCREEN_DIMENSION.x = ", SCREEN_DIMENSION.x);
+	print_info("SCREEN_DIMENSION.y = ", SCREEN_DIMENSION.y);
 	print_info("mov_speed = ", mov_speed);
 
 	sf::Event e;
@@ -154,6 +146,8 @@ int main() {
 		} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
 			fish.setRotation(-180.f);
 			velocity.y += mov_speed * delta_time;
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
+			// Restart the game
 		}
 
 		fish.move(velocity);
@@ -165,12 +159,11 @@ int main() {
 		next_pos.top += velocity.y;
 		if(worm_bounds.intersects(next_pos)) {
 			bip.play();
-			worm_x = static_cast<float>(rand() % SCREEN_WIDTH);
-			worm_y = static_cast<float>(rand() % SCREEN_HEIGHT);
+			worm_pos.x = static_cast<float>(rand() % SCREEN_DIMENSION.x);
+			worm_pos.y = static_cast<float>(rand() % SCREEN_DIMENSION.y);
 			text.setString("Points: " + std::to_string(++score));
-			worm.setPosition(worm_x, worm_y);
+			worm.setPosition(worm_pos);
 			worm.setRotation(1.0f);
-			fish.setSize(sf::Vector2f(fish_width, fish_height));
 		}
 
 		window.clear();
