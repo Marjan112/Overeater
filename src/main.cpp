@@ -2,15 +2,11 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <chrono>
-#include <thread>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <termcolor.hpp>
-#include <cstring>
+#include <string.h>
 #include <arpa/inet.h>
-
-using namespace std::chrono_literals;
 
 static const sf::Vector2i SCREEN_DIMENSION(1152, 864);
 
@@ -114,6 +110,7 @@ int main() {
 	sf::FloatRect next_pos;
 	sf::FloatRect fish_bounds;
 	sf::FloatRect worm_bounds;
+	sf::FloatRect window_bounds(0.f, 0.f, SCREEN_DIMENSION.x, SCREEN_DIMENSION.y);
 
 	print_info("SCREEN_DIMENSION.x = ", SCREEN_DIMENSION.x);
 	print_info("SCREEN_DIMENSION.y = ", SCREEN_DIMENSION.y);
@@ -161,7 +158,7 @@ int main() {
 			bip.play();
 			worm_pos.x = static_cast<float>(rand() % SCREEN_DIMENSION.x);
 			worm_pos.y = static_cast<float>(rand() % SCREEN_DIMENSION.y);
-			text.setString("Points: " + std::to_string(++score));
+			text.setString("Score: " + std::to_string(++score));
 			worm.setPosition(worm_pos);
 			worm.setRotation(1.0f);
 		}
