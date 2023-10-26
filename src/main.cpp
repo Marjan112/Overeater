@@ -4,7 +4,7 @@
 #include <SFML/Audio.hpp>
 #include <termcolor.hpp>
 
-#ifndef _WIN32
+#ifdef _WIN32
 #	include <winsock.h>
 #elif __linux__
 #	include <arpa/inet.h>
