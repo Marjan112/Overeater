@@ -1,9 +1,14 @@
 #include <iostream>
-#include <opencv4/opencv2/opencv.hpp>
+#include <fstream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <termcolor.hpp>
-#include <arpa/inet.h>
+
+#ifndef _WIN32
+#	include <winsock.h>
+#elif __linux__
+#	include <arpa/inet.h>
+#endif
 
 namespace logging {
 	template<typename StreamT, typename... ArgsT>
@@ -25,7 +30,7 @@ namespace logging {
 
 class Game {
 private:
-	const std::string resource_background = "resources/img/bg.jpg";
+	const std::string resource_background = "resources/img/bg.png";
 	const std::string resource_font = "resources/fonts/Roboto-Bold.ttf";
 	const std::string resource_fish_up = "resources/img/fish_up.png";
 	const std::string resource_worm = "resources/img/worm.png";
@@ -69,15 +74,22 @@ private:
 	sf::FloatRect worm_bounds;
 
 	sf::Vector2i get_dimension_of_image(const std::string& filepath) {
-		cv::Mat image = cv::imread(filepath);
+		std::ifstream image(filepath, std::ios::binary);
 
-		if(image.empty()) {
-			logging::print_error("Could not open \"", filepath, "\".");
+		if(!image.good()) {
+			logging::print_error("Could not open file \"", filepath, "\".");
 			exit(1);
 		}
 
-		sf::Vector2i dimension(image.cols, image.rows);
-		
+		sf::Vector2i dimension;
+
+		image.seekg(16);
+		image.read((char*)&dimension.x, 4);
+		image.read((char*)&dimension.y, 4);
+
+		dimension.x = ntohl(dimension.x);
+		dimension.y = ntohl(dimension.y);
+
 		return dimension;
 	}
 
