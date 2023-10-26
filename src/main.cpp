@@ -1,8 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <termcolor.hpp>
+
+#include "termcolor.hpp"
+#include "SFML/Graphics.hpp"
+#include "SFML/Audio.hpp"
 
 #ifdef _WIN32
 #	include <winsock.h>
