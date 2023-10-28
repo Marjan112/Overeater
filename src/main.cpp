@@ -1,15 +1,10 @@
 #include <iostream>
 #include <fstream>
+#include <arpa/inet.h>
 
 #include "../include/termcolor.hpp"
 #include "../include/SFML/Graphics.hpp"
 #include "../include/SFML/Audio.hpp"
-
-#ifdef _WIN32
-#	include <winsock.h>
-#elif __linux__
-#	include <arpa/inet.h>
-#endif
 
 namespace logging {
 	template<typename StreamT, typename... ArgsT>
