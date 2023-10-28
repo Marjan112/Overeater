@@ -172,6 +172,11 @@ private:
 		logging::print_info("Restarting the game...");
 		logging::print(std::cout, "========================================");
 
+		destroy();
+		initialize();
+	}
+
+	void destroy() {
 		delete screen_dimension;
 		delete fish_dimension;
 		delete worm_dimension;
@@ -186,8 +191,6 @@ private:
 		delete background_sprite;
 		delete sound_buffer;
 		delete beep;
-
-		initialize();
 	}
 
 public:
@@ -253,20 +256,7 @@ public:
 	}
 
 	~Game() {
-		delete screen_dimension;
-		delete fish_dimension;
-		delete worm_dimension;
-		delete window;
-		delete fish;
-		delete worm;
-		delete font;
-		delete score_text;
-		delete background_texture;
-		delete fish_texture;
-		delete worm_texture;
-		delete background_sprite;
-		delete sound_buffer;
-		delete beep;
+		destroy();
 	}
 };
 
