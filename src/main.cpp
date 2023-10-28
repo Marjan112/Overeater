@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "termcolor.hpp"
+#include "../include/termcolor.hpp"
 #include "../include/SFML/Graphics.hpp"
 #include "../include/SFML/Audio.hpp"
 
