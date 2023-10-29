@@ -116,7 +116,10 @@ private:
 		score_text->setFillColor(sf::Color::Cyan);
 		score_text->setStyle(sf::Text::Bold);
 		score_text->setString("Score: " + std::to_string(score));
-		score_text->setPosition(screen_dimension->x / 2 - score_text->getGlobalBounds().width / 2, screen_dimension->y / 2 - score_text->getGlobalBounds().height / 2);
+		score_text->setPosition(
+			screen_dimension->x / 2 - score_text->getGlobalBounds().width / 2,
+			screen_dimension->y / 2 - score_text->getGlobalBounds().height / 2
+		);
 
 		background_texture = new sf::Texture();
 		fish_texture = new sf::Texture();
@@ -152,10 +155,13 @@ private:
 
 		srand(time(nullptr));
 
-		worm_pos = sf::Vector2f(static_cast<float>(rand() % (screen_dimension->x - 10)), static_cast<float>(rand() % (screen_dimension->y - 10)));
+		worm_pos = {
+			static_cast<float>(rand() % (screen_dimension->x)),
+			static_cast<float>(rand() % (screen_dimension->y))
+		};
 	
 		worm->setTexture(*&worm_texture);
-		worm->setPosition(worm_pos.x, worm_pos.y);
+		worm->setPosition(worm_pos);
 
 		mov_speed = 700.f;
 	
@@ -169,6 +175,63 @@ private:
 
 		destroy();
 		initialize();
+	}
+
+	void handle_events() {
+		sf::Event event;
+		while(window->pollEvent(event)) {
+			switch(event.type) {
+				case sf::Event::Closed: {
+					window->close();
+					break;
+				}
+			}
+		}
+	}
+
+	void handle_keyword() {
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+			fish->setRotation(-90.f);
+			velocity.x += -mov_speed * delta_time;
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+			fish->setRotation(90.f);
+			velocity.x += mov_speed * delta_time;
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+			fish->setRotation(0.f);
+			velocity.y += -mov_speed * delta_time;
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+			fish->setRotation(-180.f);
+			velocity.y += mov_speed * delta_time;
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
+			restart();
+		}
+	}
+
+	void check_collision() {
+		fish_bounds = fish->getGlobalBounds();
+		worm_bounds = worm->getGlobalBounds();
+		next_pos = fish_bounds;
+		next_pos.left += velocity.x;
+		next_pos.top += velocity.y;
+		if(worm_bounds.intersects(next_pos)) {
+			beep->play();
+			worm_pos = {
+				static_cast<float>(rand() % screen_dimension->x),
+				static_cast<float>(rand() % screen_dimension->y),
+			};
+			score_text->setString("Score: " + std::to_string(++score));
+			worm->setPosition(worm_pos);
+			worm->setRotation(1.0f);
+		}
+	}
+
+	void render() {
+		window->clear();
+		window->draw(*background_sprite);
+		window->draw(*score_text);
+		window->draw(*fish);
+		window->draw(*worm);
+		window->display();
 	}
 
 	void destroy() {
@@ -194,59 +257,17 @@ public:
 	}
 
 	void game_loop() {
-		sf::Event e;
 		while(window->isOpen()) {
 			delta_time = delta_clock.restart().asSeconds();
+			velocity = {0, 0};
 
-			while(window->pollEvent(e)) {
-				switch(e.type) {
-					case sf::Event::Closed: {
-						window->close();
-						break;
-					}
-				}
-			}
-
-			velocity.x = velocity.y = 0;
-
-			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-				fish->setRotation(-90.f);
-				velocity.x += -mov_speed * delta_time;
-			} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-				fish->setRotation(90.f);
-				velocity.x += mov_speed * delta_time;
-			} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-				fish->setRotation(0.f);
-				velocity.y += -mov_speed * delta_time;
-			} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-				fish->setRotation(-180.f);
-				velocity.y += mov_speed * delta_time;
-			} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
-				restart();
-			}
+			handle_events();
+			handle_keyword();
 
 			fish->move(velocity);
 
-			fish_bounds = fish->getGlobalBounds();
-			worm_bounds = worm->getGlobalBounds();
-			next_pos = fish_bounds;
-			next_pos.left += velocity.x;
-			next_pos.top += velocity.y;
-			if(worm_bounds.intersects(next_pos)) {
-				beep->play();
-				worm_pos.x = static_cast<float>(rand() % (screen_dimension->x - 10));
-				worm_pos.y = static_cast<float>(rand() % (screen_dimension->y - 10));
-				score_text->setString("Score: " + std::to_string(++score));
-				worm->setPosition(worm_pos);
-				worm->setRotation(1.0f);
-			}
-
-			window->clear();
-			window->draw(*background_sprite);
-			window->draw(*score_text);
-			window->draw(*fish);
-			window->draw(*worm);
-			window->display();
+			check_collision();
+			render();
 		}
 	}
 
