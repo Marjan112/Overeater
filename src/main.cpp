@@ -1,28 +1,12 @@
 #include <iostream>
 #include <fstream>
-#include <arpa/inet.h>
 
-#include "../include/termcolor.hpp"
+#ifdef __linux__
+#include <arpa/inet.h>
+#endif
+
 #include "../include/SFML/Graphics.hpp"
 #include "../include/SFML/Audio.hpp"
-
-namespace logging {
-	template<typename StreamT, typename... ArgsT>
-	void print(StreamT& stream, ArgsT&&... args) {
-		(stream << ... << args);
-		(stream << "\n");
-	}
-
-	template<typename... ArgsT>
-	void print_info(ArgsT&&... args) {
-		print(std::cout, termcolor::green<char>, "[INFO]: ", termcolor::reset<char>, args...);
-	}
-
-	template<typename... ArgsT>
-	void print_error(ArgsT&&... args) {
-		print(std::cerr, termcolor::red<char>, "[ERROR]: ", termcolor::reset<char>, args...);
-	}
-}
 
 class Game {
 public:
@@ -55,7 +39,7 @@ private:
 		std::ifstream image(filepath, std::ios::binary);
 
 		if(!image.good()) {
-			logging::print_error("Could not open file \"", filepath, "\".");
+			std::cout << "Could not open file \"" << filepath << "\".\n";
 			exit(1);
 		}
 
@@ -75,8 +59,6 @@ private:
 		screen_dimension = new sf::Vector2i(get_dimension_of_image(resource_background));
 		fish_dimension = new sf::Vector2f(static_cast<sf::Vector2f>(get_dimension_of_image(resource_fish_up)));
 		worm_dimension = new sf::Vector2f(static_cast<sf::Vector2f>(get_dimension_of_image(resource_worm)));
-	
-		logging::print_info("screen_dimension = (", screen_dimension->x, ", ", screen_dimension->y, ")");
 
 		video_mode = sf::VideoMode(screen_dimension->x, screen_dimension->y);
 		window = new sf::RenderWindow(video_mode, "Overeater", sf::Style::Close);
@@ -87,7 +69,7 @@ private:
 	
 		font = new sf::Font();
 		if(font->loadFromFile(resource_font)) {
-			logging::print_info("Resource \"", resource_font, "\" is loaded successfully.");
+			std::cout << "Resource \"" << resource_font << "\" is loaded successfully.\n";
 		}
 
 		score = 0;
@@ -108,15 +90,15 @@ private:
 		worm_texture = new sf::Texture();
 
 		if(background_texture->loadFromFile(resource_background)) {
-			logging::print_info("Resource \"", resource_background, "\" is loaded successfully.");
+			std::cout << "Resource \"" << resource_background << "\" is loaded successfully.\n";
 		}
 		
 		if(fish_texture->loadFromFile(resource_fish_up)) {
-			logging::print_info("Resource \"", resource_fish_up, "\" is loaded successfully.");
+			std::cout << "Resource \"" << resource_fish_up << "\" is loaded successfully.\n";
 		}
 
 		if(worm_texture->loadFromFile(resource_worm)) {
-			logging::print_info("Resource \"", resource_worm, "\" is loaded successfully.");
+			std::cout << "Resource \"" << resource_worm << "\" is loaded successfully.\n";
 		}
 	
 		background_sprite = new sf::Sprite(*background_texture);
@@ -127,7 +109,7 @@ private:
 		sound_buffer = new sf::SoundBuffer();
 
 		if(sound_buffer->loadFromFile(resource_pou_eating)) {
-			logging::print_info("Resource \"", resource_pou_eating, "\" is loaded successfully.");
+			std::cout << "Resource \"" << resource_pou_eating << "\" is loaded successfully.\n";
 		}
 	
 		beep = new sf::Sound();
@@ -149,9 +131,9 @@ private:
 	}
 
 	void restart() {
-		logging::print(std::cout, "========================================");
-		logging::print_info("Restarting the game...");
-		logging::print(std::cout, "========================================");
+		std::cout << "========================================\n";
+		std::cout << "Restarting the game...\n";
+		std::cout << "========================================\n";
 
 		destroy();
 		initialize();
