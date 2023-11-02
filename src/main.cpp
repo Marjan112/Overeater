@@ -50,6 +50,7 @@ public:
 		destroy();
 	}
 private:
+	// Supports png only
 	sf::Vector2i get_dimension_of_image(const std::string& filepath) {
 		std::ifstream image(filepath, std::ios::binary);
 
