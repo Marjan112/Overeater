@@ -25,50 +25,31 @@ namespace logging {
 }
 
 class Game {
+public:
+	Game() {
+		initialize();
+		srand(time(nullptr));
+	}
+
+	void game_loop() {
+		while(window->isOpen()) {
+			delta_time = delta_clock.restart().asSeconds();
+			velocity = {0, 0};
+
+			handle_events();
+			handle_keyword();
+
+			fish->move(velocity);
+
+			check_collision();
+			render();
+		}
+	}
+
+	~Game() {
+		destroy();
+	}
 private:
-	const std::string resource_background = "resources/img/bg.png";
-	const std::string resource_font = "resources/fonts/Roboto-Bold.ttf";
-	const std::string resource_fish_up = "resources/img/fish_up.png";
-	const std::string resource_worm = "resources/img/worm.png";
-	const std::string resource_pou_eating = "resources/sound/pou_eating.wav";
-
-	sf::Clock delta_clock;
-	sf::Vector2f velocity;
-	float delta_time;
-	float mov_speed;
-
-	int score;
-	
-	sf::Vector2i* screen_dimension;
-	sf::Vector2f* fish_dimension;
-	sf::Vector2f* worm_dimension;
-
-	sf::VideoMode video_mode;
-
-	sf::RenderWindow* window;
-	sf::RectangleShape* fish;
-	sf::RectangleShape* worm;
-
-	sf::Vector2f start_pos;
-
-	sf::Font* font;
-	sf::Text* score_text;
-
-	sf::Texture* background_texture;
-	sf::Texture* fish_texture;
-	sf::Texture* worm_texture;
-
-	sf::Sprite* background_sprite;
-
-	sf::SoundBuffer* sound_buffer;
-	sf::Sound* beep;
-
-	sf::Vector2f worm_pos;
-
-	sf::FloatRect next_pos;
-	sf::FloatRect fish_bounds;
-	sf::FloatRect worm_bounds;
-
 	sf::Vector2i get_dimension_of_image(const std::string& filepath) {
 		std::ifstream image(filepath, std::ios::binary);
 
@@ -153,8 +134,6 @@ private:
 		beep->setBuffer(*sound_buffer);
 		beep->setVolume(50);
 
-		srand(time(nullptr));
-
 		worm_pos = {
 			static_cast<float>(rand() % (screen_dimension->x)),
 			static_cast<float>(rand() % (screen_dimension->y))
@@ -204,6 +183,10 @@ private:
 			velocity.y += mov_speed * delta_time;
 		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
 			restart();
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
+			window->close();
+			destroy();
+			exit(0);
 		}
 	}
 
@@ -251,29 +234,48 @@ private:
 		delete beep;
 	}
 
-public:
-	Game() {
-		initialize();
-	}
+	const std::string resource_background = "resources/img/bg.png";
+	const std::string resource_font = "resources/fonts/Roboto-Bold.ttf";
+	const std::string resource_fish_up = "resources/img/fish_up.png";
+	const std::string resource_worm = "resources/img/worm.png";
+	const std::string resource_pou_eating = "resources/sound/pou_eating.wav";
 
-	void game_loop() {
-		while(window->isOpen()) {
-			delta_time = delta_clock.restart().asSeconds();
-			velocity = {0, 0};
+	sf::Clock delta_clock;
+	sf::Vector2f velocity;
+	float delta_time;
+	float mov_speed;
 
-			handle_events();
-			handle_keyword();
+	int score;
+	
+	sf::Vector2i* screen_dimension;
+	sf::Vector2f* fish_dimension;
+	sf::Vector2f* worm_dimension;
 
-			fish->move(velocity);
+	sf::VideoMode video_mode;
 
-			check_collision();
-			render();
-		}
-	}
+	sf::RenderWindow* window;
+	sf::RectangleShape* fish;
+	sf::RectangleShape* worm;
 
-	~Game() {
-		destroy();
-	}
+	sf::Vector2f start_pos;
+
+	sf::Font* font;
+	sf::Text* score_text;
+
+	sf::Texture* background_texture;
+	sf::Texture* fish_texture;
+	sf::Texture* worm_texture;
+
+	sf::Sprite* background_sprite;
+
+	sf::SoundBuffer* sound_buffer;
+	sf::Sound* beep;
+
+	sf::Vector2f worm_pos;
+
+	sf::FloatRect next_pos;
+	sf::FloatRect fish_bounds;
+	sf::FloatRect worm_bounds;
 };
 
 int main() {
