@@ -1,22 +1,9 @@
 #include <iostream>
 #include <fstream>
-
-#if defined(__linux__)
 #include <arpa/inet.h>
 
 #include "../include/SFML_Linux/Graphics.hpp"
 #include "../include/SFML_Linux/Audio.hpp"
-#elif defined(_WIN32)
-#include <winsock.h>
-
-#if defined(__MINGW32__)
-#include "../include/SFML_Windows_MinGW/Graphics.hpp"
-#include "../include/SFML_Windows_MinGW/Audio.hpp"
-#elif defined(_MSC_VER)
-#include "../include/SFML_Vsc/Graphics.hpp"
-#include "../include/SFML_Vsc/Audio.hpp"
-#endif
-#endif
 
 class Game {
 public:
