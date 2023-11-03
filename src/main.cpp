@@ -1,9 +1,25 @@
 #include <iostream>
 #include <fstream>
-#include <arpa/inet.h>
 
-#include "../include/SFML_Linux/Graphics.hpp"
-#include "../include/SFML_Linux/Audio.hpp"
+#if defined(__linux__)
+#	include <arpa/inet.h>
+
+#	include "../include/SFML_Linux/Graphics.hpp"
+#	include "../include/SFML_Linux/Audio.hpp"
+#elif defined(_MSC_VER)
+#	define NOMINMAX
+
+#	pragma comment(lib, "sfml-window.lib")
+#	pragma comment(lib, "sfml-audio.lib")
+#	pragma comment(lib, "sfml-system.lib")
+#	pragma comment(lib, "sfml-graphics.lib")
+#	pragma comment(lib, "Ws2_32.lib")
+
+#	include <Winsock2.h>
+
+#	include "../include/SFML_MSC_Windows/Graphics.hpp"
+#	include "../include/SFML_MSC_Windows/Audio.hpp"
+#endif
 
 class Game {
 public:
