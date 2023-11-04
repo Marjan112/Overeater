@@ -52,7 +52,7 @@ private:
 		std::ifstream image(filepath, std::ios::binary);
 
 		if(!image.good()) {
-			std::cout << "Could not open file \"" << filepath << "\".\n";
+			std::cerr << "Could not open file \"" << filepath << "\".\n";
 			exit(1);
 		}
 
@@ -78,7 +78,10 @@ private:
 		fish = new sf::RectangleShape(*fish_dimension);
 		worm = new sf::RectangleShape(*worm_dimension);
 	
-		start_pos = sf::Vector2f(screen_dimension->x / 2 - fish_dimension->x / 2, screen_dimension->y / 2 - fish_dimension->y / 2);
+		start_pos = {
+			screen_dimension->x / 2 - fish_dimension->x / 2,
+			screen_dimension->y / 2 - fish_dimension->y / 2
+		};
 	
 		font = new sf::Font();
 		if(font->loadFromFile(resource_font)) {
