@@ -3,6 +3,7 @@
 
 #if defined(__linux__)
 #	include <arpa/inet.h>
+#	include <endian.h>
 
 #	include "../include/SFML_Linux/Graphics.hpp"
 #	include "../include/SFML_Linux/Audio.hpp"
@@ -62,9 +63,10 @@ private:
 		image.read((char*)&dimension.x, 4);
 		image.read((char*)&dimension.y, 4);
 
+#if __BYTE_ORDER == __LITTLE_ENDIAN
 		dimension.x = ntohl(dimension.x);
 		dimension.y = ntohl(dimension.y);
-
+#endif
 		return dimension;
 	}
 
