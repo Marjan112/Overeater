@@ -2,11 +2,9 @@
 #include <fstream>
 
 #if defined(__linux__)
-#	include <arpa/inet.h>
-#	include <endian.h>
-
 #	include "../include/SFML_Linux/Graphics.hpp"
 #	include "../include/SFML_Linux/Audio.hpp"
+#	include "../include/SFML_Linux/Graphics/Image.hpp"
 #elif defined(_MSC_VER)
 #	define NOMINMAX
 
@@ -16,10 +14,9 @@
 #	pragma comment(lib, "sfml-graphics.lib")
 #	pragma comment(lib, "Ws2_32.lib")
 
-#	include <Winsock2.h>
-
 #	include "../include/SFML_MSC_Windows/Graphics.hpp"
 #	include "../include/SFML_MSC_Windows/Audio.hpp"
+#	include "../include/SFML_MSC_Windows/Image.hpp"
 #endif
 
 class Game {
@@ -48,41 +45,31 @@ public:
 		destroy();
 	}
 private:
-	// Supports png only
-	sf::Vector2i get_dimension_of_image(const std::string& filepath) {
-		std::ifstream image(filepath, std::ios::binary);
-
-		if(!image.good()) {
-			std::cerr << "Could not open file \"" << filepath << "\".\n";
-			exit(1);
+	void initialize() {
+		if(image_background.loadFromFile(resource_background)) {
+			std::cout << "Successfully loaded image \"" << resource_background << "\".\n";
 		}
 
-		sf::Vector2i dimension;
+		if(image_fish_up.loadFromFile(resource_fish_up)) {
+			std::cout << "Successfully loaded image \"" << resource_fish_up << "\".\n";
+		}
 
-		image.seekg(16);
-		image.read((char*)&dimension.x, 4);
-		image.read((char*)&dimension.y, 4);
+		if(image_worm.loadFromFile(resource_worm)) {
+			std::cout << "Successfully loaded image \"" << resource_worm << "\".\n";
+		}
 
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-		dimension.x = ntohl(dimension.x);
-		dimension.y = ntohl(dimension.y);
-#endif
-		return dimension;
-	}
+		screen_dimension = image_background.getSize();
+		fish_dimension = image_fish_up.getSize();
+		worm_dimension = image_worm.getSize();
 
-	void initialize() {
-		screen_dimension = new sf::Vector2i(get_dimension_of_image(resource_background));
-		fish_dimension = new sf::Vector2f(static_cast<sf::Vector2f>(get_dimension_of_image(resource_fish_up)));
-		worm_dimension = new sf::Vector2f(static_cast<sf::Vector2f>(get_dimension_of_image(resource_worm)));
-
-		video_mode = sf::VideoMode(screen_dimension->x, screen_dimension->y);
+		video_mode = sf::VideoMode(screen_dimension.x, screen_dimension.y);
 		window = new sf::RenderWindow(video_mode, "Overeater", sf::Style::Close);
-		fish = new sf::RectangleShape(*fish_dimension);
-		worm = new sf::RectangleShape(*worm_dimension);
+		fish = new sf::RectangleShape({(float)fish_dimension.x, (float)fish_dimension.y});
+		worm = new sf::RectangleShape({(float)worm_dimension.x, (float)worm_dimension.y});
 	
 		start_pos = {
-			screen_dimension->x / 2 - fish_dimension->x / 2,
-			screen_dimension->y / 2 - fish_dimension->y / 2
+			(float)screen_dimension.x / 2 - (float)fish_dimension.x / 2,
+			(float)screen_dimension.y / 2 - (float)fish_dimension.y / 2
 		};
 	
 		font = new sf::Font();
@@ -99,23 +86,23 @@ private:
 		score_text->setStyle(sf::Text::Bold);
 		score_text->setString("Score: " + std::to_string(score));
 		score_text->setPosition(
-			screen_dimension->x / 2 - score_text->getGlobalBounds().width / 2,
-			screen_dimension->y / 2 - score_text->getGlobalBounds().height / 2
+			screen_dimension.x / 2 - score_text->getGlobalBounds().width / 2,
+			screen_dimension.y / 2 - score_text->getGlobalBounds().height / 2
 		);
 
 		background_texture = new sf::Texture();
 		fish_texture = new sf::Texture();
 		worm_texture = new sf::Texture();
 
-		if(background_texture->loadFromFile(resource_background)) {
+		if(background_texture->loadFromImage(image_background)) {
 			std::cout << "Resource \"" << resource_background << "\" is loaded successfully.\n";
 		}
 		
-		if(fish_texture->loadFromFile(resource_fish_up)) {
+		if(fish_texture->loadFromImage(image_fish_up)) {
 			std::cout << "Resource \"" << resource_fish_up << "\" is loaded successfully.\n";
 		}
 
-		if(worm_texture->loadFromFile(resource_worm)) {
+		if(worm_texture->loadFromImage(image_worm)) {
 			std::cout << "Resource \"" << resource_worm << "\" is loaded successfully.\n";
 		}
 	
@@ -136,8 +123,8 @@ private:
 		beep->setVolume(50);
 
 		worm_pos = {
-			static_cast<float>(rand() % (screen_dimension->x)),
-			static_cast<float>(rand() % (screen_dimension->y))
+			static_cast<float>(rand() % screen_dimension.x),
+			static_cast<float>(rand() % screen_dimension.y)
 		};
 	
 		worm->setTexture(*&worm_texture);
@@ -200,8 +187,8 @@ private:
 		if(worm_bounds.intersects(next_pos)) {
 			beep->play();
 			worm_pos = {
-				static_cast<float>(rand() % screen_dimension->x),
-				static_cast<float>(rand() % screen_dimension->y),
+				static_cast<float>(rand() % screen_dimension.x),
+				static_cast<float>(rand() % screen_dimension.y),
 			};
 			score_text->setString("Score: " + std::to_string(++score));
 			worm->setPosition(worm_pos);
@@ -219,9 +206,6 @@ private:
 	}
 
 	void destroy() {
-		delete screen_dimension;
-		delete fish_dimension;
-		delete worm_dimension;
 		delete window;
 		delete fish;
 		delete worm;
@@ -248,9 +232,13 @@ private:
 
 	int score;
 	
-	sf::Vector2i* screen_dimension;
-	sf::Vector2f* fish_dimension;
-	sf::Vector2f* worm_dimension;
+	sf::Image image_background;
+	sf::Image image_fish_up;
+	sf::Image image_worm;
+
+	sf::Vector2u screen_dimension;
+	sf::Vector2u fish_dimension;
+	sf::Vector2u worm_dimension;
 
 	sf::VideoMode video_mode;
 
