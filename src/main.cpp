@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 #if defined(__linux__)
 #	include "../include/SFML_Linux/Graphics.hpp"
 #	include "../include/SFML_Linux/Audio.hpp"
-#	include "../include/SFML_Linux/Graphics/Image.hpp"
 #elif defined(_MSC_VER)
 #	define NOMINMAX
 
@@ -15,14 +15,15 @@
 
 #	include "../include/SFML_MSC_Windows/Graphics.hpp"
 #	include "../include/SFML_MSC_Windows/Audio.hpp"
-#	include "../include/SFML_MSC_Windows/Image.hpp"
 #endif
 
 class Game {
 public:
-	Game() {
-		initialize();
+	Game(bool& is_initialized) {
+		sf::err().rdbuf(nullptr);
 		srand(time(nullptr));
+		this->is_initialized = initialize();
+		is_initialized = this->is_initialized;
 	}
 
 	void game_loop() {
@@ -41,20 +42,31 @@ public:
 	}
 
 	~Game() {
-		destroy();
+		if(is_initialized == true) {
+			destroy();
+		}
 	}
 private:
-	void initialize() {
+	bool initialize() {
 		if(image_background.loadFromFile(resource_background)) {
-			std::cout << "Successfully loaded image \"" << resource_background << "\".\n";
+			std::cout << "Successfully loaded dimension of image \"" << resource_background << "\".\n";
+		} else {
+			std::cerr << "Could not load dimension of image \"" << resource_background << "\". Error: " << strerror(errno) << "\n";
+			return false;
 		}
 
 		if(image_fish_up.loadFromFile(resource_fish_up)) {
-			std::cout << "Successfully loaded image \"" << resource_fish_up << "\".\n";
+			std::cout << "Successfully loaded image dimension of \"" << resource_fish_up << "\".\n";
+		} else {
+			std::cerr << "Could not load dimension of image \"" << resource_fish_up << "\". Error: " << strerror(errno) << "\n";
+			return false;
 		}
 
 		if(image_worm.loadFromFile(resource_worm)) {
-			std::cout << "Successfully loaded image \"" << resource_worm << "\".\n";
+			std::cout << "Successfully loaded image dimension of \"" << resource_worm << "\".\n";
+		} else {
+			std::cerr << "Could not load dimension of image \"" << resource_worm << "\". Error: " << strerror(errno) << "\n";
+			return false;
 		}
 
 		screen_dimension = image_background.getSize();
@@ -74,6 +86,9 @@ private:
 		font = new sf::Font();
 		if(font->loadFromFile(resource_font)) {
 			std::cout << "Resource \"" << resource_font << "\" is loaded successfully.\n";
+		} else {
+			std::cerr << "Could not load resource \"" << resource_font << "\". Error: " << strerror(errno) << "\n";
+			return false;
 		}
 
 		score = 0;
@@ -95,14 +110,23 @@ private:
 
 		if(background_texture->loadFromImage(image_background)) {
 			std::cout << "Resource \"" << resource_background << "\" is loaded successfully.\n";
+		} else {
+			std::cerr << "Could not load resource \"" << resource_background << "\". Error: " << strerror(errno) << "\n";
+			return false;
 		}
 		
 		if(fish_texture->loadFromImage(image_fish_up)) {
 			std::cout << "Resource \"" << resource_fish_up << "\" is loaded successfully.\n";
+		} else {
+			std::cerr << "Could not load resource \"" << resource_fish_up << "\". Error: " << strerror(errno) << "\n";
+			return false;
 		}
 
 		if(worm_texture->loadFromImage(image_worm)) {
 			std::cout << "Resource \"" << resource_worm << "\" is loaded successfully.\n";
+		} else {
+			std::cerr << "Could not load resource \"" << resource_worm << "\". Error: " << strerror(errno) << "\n";
+			return false;
 		}
 	
 		background_sprite = new sf::Sprite(*background_texture);
@@ -114,12 +138,15 @@ private:
 
 		if(sound_buffer->loadFromFile(resource_pou_eating)) {
 			std::cout << "Resource \"" << resource_pou_eating << "\" is loaded successfully.\n";
+		} else {
+			std::cerr << "Could not load resource \"" << resource_pou_eating << "\". Error: " << strerror(errno) << "\n";
+			return false;
 		}
 	
-		beep = new sf::Sound();
+		sound_when_fish_eats = new sf::Sound();
 
-		beep->setBuffer(*sound_buffer);
-		beep->setVolume(50);
+		sound_when_fish_eats->setBuffer(*sound_buffer);
+		sound_when_fish_eats->setVolume(50);
 
 		worm_pos = {
 			static_cast<float>(rand() % screen_dimension.x),
@@ -128,10 +155,12 @@ private:
 	
 		worm->setTexture(*&worm_texture);
 		worm->setPosition(worm_pos);
-
-		mov_speed = 700.f;
 	
 		window->setFramerateLimit(60);
+
+		mov_speed = 700.f;
+		
+		return true;
 	}
 
 	void restart() {
@@ -184,7 +213,7 @@ private:
 		next_pos.left += velocity.x;
 		next_pos.top += velocity.y;
 		if(worm_bounds.intersects(next_pos)) {
-			beep->play();
+			sound_when_fish_eats->play();
 			worm_pos = {
 				static_cast<float>(rand() % screen_dimension.x),
 				static_cast<float>(rand() % screen_dimension.y),
@@ -215,7 +244,7 @@ private:
 		delete worm_texture;
 		delete background_sprite;
 		delete sound_buffer;
-		delete beep;
+		delete sound_when_fish_eats;
 	}
 
 	const std::string resource_background = "resources/img/bg.png";
@@ -257,16 +286,26 @@ private:
 	sf::Sprite* background_sprite;
 
 	sf::SoundBuffer* sound_buffer;
-	sf::Sound* beep;
+	sf::Sound* sound_when_fish_eats;
 
 	sf::Vector2f worm_pos;
 
 	sf::FloatRect next_pos;
 	sf::FloatRect fish_bounds;
 	sf::FloatRect worm_bounds;
+
+	bool is_initialized;
 };
 
 int main() {
-	Game().game_loop();
+	bool is_initialized;
+	Game game(is_initialized);
+	
+	if(is_initialized == false) {
+		std::cerr << "Could not initialize game.\n";
+		return 1;
+	}
+
+	game.game_loop();
 	return 0;
 }
