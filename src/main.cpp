@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <random>
 #include <cstring>
 
 #if defined(__linux__)
@@ -20,8 +21,10 @@
 class Game {
 public:
 	Game(bool& is_initialized) {
+		#if !defined(DEBUG)
 		sf::err().rdbuf(nullptr);
-		srand(time(nullptr));
+		#endif
+		random_generator.seed(random_device());
 		this->is_initialized = initialize();
 		is_initialized = this->is_initialized;
 	}
@@ -132,6 +135,7 @@ private:
 		background_sprite = new sf::Sprite(*background_texture);
 	
 		fish->setTexture(*&fish_texture);
+		fish->setOrigin(fish->getSize().x / 2, fish->getSize().x / 2);
 		fish->setPosition(start_pos);
 
 		sound_buffer = new sf::SoundBuffer();
@@ -148,9 +152,12 @@ private:
 		sound_when_fish_eats->setBuffer(*sound_buffer);
 		sound_when_fish_eats->setVolume(50);
 
+		from_0_to_width = std::uniform_real_distribution<float>(0.f, screen_dimension.x);
+		from_0_to_height = std::uniform_real_distribution<float>(0.f, screen_dimension.y);
+
 		worm_pos = {
-			static_cast<float>(rand() % screen_dimension.x),
-			static_cast<float>(rand() % screen_dimension.y)
+			from_0_to_width(random_generator),
+			from_0_to_height(random_generator)
 		};
 	
 		worm->setTexture(*&worm_texture);
@@ -215,8 +222,8 @@ private:
 		if(worm_bounds.intersects(next_pos)) {
 			sound_when_fish_eats->play();
 			worm_pos = {
-				static_cast<float>(rand() % screen_dimension.x),
-				static_cast<float>(rand() % screen_dimension.y),
+				from_0_to_width(random_generator),
+				from_0_to_height(random_generator),
 			};
 			score_text->setString("Score: " + std::to_string(++score));
 			worm->setPosition(worm_pos);
@@ -252,6 +259,11 @@ private:
 	const std::string resource_fish_up = "resources/img/fish_up.png";
 	const std::string resource_worm = "resources/img/worm.png";
 	const std::string resource_pou_eating = "resources/sound/pou_eating.wav";
+
+	std::random_device random_device;
+	std::mt19937 random_generator;
+	std::uniform_real_distribution<float> from_0_to_width;
+	std::uniform_real_distribution<float> from_0_to_height;
 
 	sf::Clock delta_clock;
 	sf::Vector2f velocity;
