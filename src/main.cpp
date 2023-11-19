@@ -20,17 +20,19 @@
 
 class Game {
 public:
-	Game(bool& is_initialized) {
+	Game() {
 		#if !defined(DEBUG)
 		sf::err().rdbuf(nullptr);
 		#endif
 		random_generator.seed(random_device());
-		this->is_initialized = initialize();
-		is_initialized = this->is_initialized;
+		is_initialized = initialize();
+		if(is_initialized == false) {
+			std::cout << "Could not initialize the game.\n";
+		}
 	}
 
 	void game_loop() {
-		while(window->isOpen()) {
+		while(is_initialized == true && window->isOpen()) {
 			delta_time = delta_clock.restart().asSeconds();
 			velocity = {0, 0};
 
@@ -310,14 +312,6 @@ private:
 };
 
 int main() {
-	bool is_initialized;
-	Game game(is_initialized);
-	
-	if(is_initialized == false) {
-		std::cerr << "Could not initialize game.\n";
-		return 1;
-	}
-
-	game.game_loop();
+	Game().game_loop();
 	return 0;
 }
