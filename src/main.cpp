@@ -10,6 +10,5 @@
 
 int main() {
 	Game().game_loop();
-	main();
 	return 0;
 }
