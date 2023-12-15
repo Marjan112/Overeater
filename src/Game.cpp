@@ -121,7 +121,7 @@ bool Game::initialize() {
 		std::cerr << "Could not load resource \"" << resource_worm << "\". Error: " << strerror(errno) << "\n";
 		return false;
 	}
-	
+
 	background_sprite = new sf::Sprite(*background_texture);
 	entities.entity_fish.shape->setTexture(*&entities.entity_fish.texture);
 	entities.entity_fish.shape->setOrigin(
@@ -173,7 +173,6 @@ void Game::handle_events() {
 		switch(event.type) {
 			case sf::Event::Closed: {
 				window->close();
-				destroy();
 				break;
 			}
 		}
@@ -197,8 +196,6 @@ void Game::handle_keyword() {
 		restart();
 	} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
 		window->close();
-		destroy();
-		exit(0);
 	}
 }
 
