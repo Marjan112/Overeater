@@ -163,7 +163,7 @@ void Game::restart() {
 	destroy();
 	if(!initialize()) {
 		std::cerr << "Could not initialize game.\n";
-		exit(0);
+		exit(1);
 	}
 }
 
