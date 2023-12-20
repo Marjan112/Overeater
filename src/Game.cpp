@@ -66,17 +66,17 @@ bool Game::initialize() {
 	window = new sf::RenderWindow(video_mode, "Overeater", sf::Style::Close);
 
 	entities.entity_fish.shape = new sf::RectangleShape(sf::Vector2f(
-		(float)entities.entity_fish.dimension.x,
-		(float)entities.entity_fish.dimension.y
+		entities.entity_fish.dimension.x,
+		entities.entity_fish.dimension.y
 	));
 	entities.entity_worm.shape = new sf::RectangleShape(sf::Vector2f(
-		(float)entities.entity_worm.dimension.x,
-		(float)entities.entity_worm.dimension.y
+		entities.entity_worm.dimension.x,
+		entities.entity_worm.dimension.y
 	));
 	
 	start_pos = sf::Vector2f(
-		(float)screen_dimension.x / 2 - (float)entities.entity_fish.dimension.x / 2,
-		(float)screen_dimension.y / 2 - (float)entities.entity_fish.dimension.y / 2
+		screen_dimension.x / 2 - entities.entity_fish.dimension.x / 2,
+		screen_dimension.y / 2 - entities.entity_fish.dimension.y / 2
 	);
 	
 	font = new sf::Font();
@@ -125,8 +125,8 @@ bool Game::initialize() {
 	background_sprite = new sf::Sprite(*background_texture);
 	entities.entity_fish.shape->setTexture(*&entities.entity_fish.texture);
 	entities.entity_fish.shape->setOrigin(
-		entities.entity_fish.shape->getSize().x / 2,
-		entities.entity_fish.shape->getSize().y / 2
+		entities.entity_fish.dimension.x / 2,
+		entities.entity_fish.dimension.y / 2
 	);
 	entities.entity_fish.shape->setPosition(start_pos);
 
@@ -152,7 +152,7 @@ bool Game::initialize() {
 	
 	window->setFramerateLimit(60);
 
-	entities.entity_fish.mov_speed = 700.f;
+	entities.entity_fish.mov_speed = DEFAULT_FISH_MOV_SPEED;
 		
 	return true;
 }
@@ -200,12 +200,7 @@ void Game::handle_keyword() {
 }
 
 void Game::check_collision() {
-	entities.entity_fish.bounds = entities.entity_fish.shape->getGlobalBounds();
-	entities.entity_worm.bounds = entities.entity_worm.shape->getGlobalBounds();
-	next_pos = entities.entity_fish.bounds;
-	next_pos.left += entities.entity_fish.velocity.x;
-	next_pos.top += entities.entity_fish.velocity.y;
-	if(entities.entity_worm.bounds.intersects(next_pos)) {
+	if(entities.entity_fish.shape->getGlobalBounds().intersects(entities.entity_worm.shape->getGlobalBounds())) {
 		entities.entity_fish.eating_sound->play();
 		worm_pos = sf::Vector2f(
 			from_0_to_width(random_generator),
@@ -213,7 +208,6 @@ void Game::check_collision() {
 		);
 		score_text->setString("Score: " + std::to_string(++score));
 		entities.entity_worm.shape->setPosition(worm_pos);
-		entities.entity_worm.shape->setRotation(1.0f);
 	}
 }
 

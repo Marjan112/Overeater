@@ -12,6 +12,8 @@
 #include "resources.hpp"
 #include "GameEntities.hpp"
 
+#define DEFAULT_FISH_MOV_SPEED 700.f
+
 class Game {
 public:
 	Game();
