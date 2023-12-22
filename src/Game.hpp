@@ -39,7 +39,6 @@ private:
 	GameEntities entities;
 	sf::Vector2f start_pos;
 	sf::Vector2f worm_pos;
-	sf::FloatRect next_pos;
 	
 	sf::Image image_background;
 	sf::Vector2u screen_dimension;
