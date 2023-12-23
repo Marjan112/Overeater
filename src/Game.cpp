@@ -19,6 +19,7 @@ void Game::game_loop() {
 	while(is_initialized == true && window->isOpen()) {
 		delta_time = delta_clock.restart().asSeconds();
 		entities.entity_fish.velocity = sf::Vector2f(0, 0);
+		entities.entity_fish.fish_pos = entities.entity_fish.shape->getPosition();
 
 		handle_events();
 		handle_keyword();
@@ -93,8 +94,8 @@ bool Game::initialize() {
 	score_text->setFillColor(sf::Color::Cyan);
 	score_text->setStyle(sf::Text::Bold);
 	score_text->setPosition(
-		screen_dimension.x / 2 - score_text->getGlobalBounds().width / 2,
-		screen_dimension.y / 2 - score_text->getGlobalBounds().height / 2
+		10,
+		10
 	);
 
 	background_texture = new sf::Texture();
@@ -145,10 +146,14 @@ bool Game::initialize() {
 	from_0_to_width = std::uniform_real_distribution<float>(0.f, screen_dimension.x);
 	from_0_to_height = std::uniform_real_distribution<float>(0.f, screen_dimension.y);
 
-	worm_pos = sf::Vector2f(from_0_to_width(random_generator), from_0_to_height(random_generator));
+	entities.entity_worm.worm_pos = sf::Vector2f(from_0_to_width(random_generator), from_0_to_height(random_generator));
 	
 	entities.entity_worm.shape->setTexture(*&entities.entity_worm.texture);
-	entities.entity_worm.shape->setPosition(worm_pos);
+	entities.entity_worm.shape->setOrigin(
+		entities.entity_worm.dimension.x / 2,
+		entities.entity_worm.dimension.y / 2
+	);
+	entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
 	
 	window->setFramerateLimit(60);
 
@@ -202,12 +207,54 @@ void Game::handle_keyword() {
 void Game::check_collision() {
 	if(entities.entity_fish.shape->getGlobalBounds().intersects(entities.entity_worm.shape->getGlobalBounds())) {
 		entities.entity_fish.eating_sound->play();
-		worm_pos = sf::Vector2f(
+		entities.entity_worm.worm_pos = sf::Vector2f(
 			from_0_to_width(random_generator),
 			from_0_to_height(random_generator)
 		);
 		score_text->setString("Score: " + std::to_string(++score));
-		entities.entity_worm.shape->setPosition(worm_pos);
+		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
+	}
+
+	entities.entity_fish.shape->setOrigin(
+		entities.entity_fish.dimension.x,
+		entities.entity_fish.dimension.y
+	);
+	if(entities.entity_fish.fish_pos.x < 0) {
+		entities.entity_fish.fish_pos.x = 0;
+		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
+	}
+	if(entities.entity_fish.fish_pos.x > screen_dimension.x) {
+		entities.entity_fish.fish_pos.x = screen_dimension.x;
+		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
+	}
+	if(entities.entity_fish.fish_pos.y < 0) {
+		entities.entity_fish.fish_pos.y = 0;
+		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
+	}
+	if(entities.entity_fish.fish_pos.y > screen_dimension.y) {
+		entities.entity_fish.fish_pos.y = screen_dimension.y;
+		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
+	}
+	entities.entity_fish.shape->setOrigin(
+		entities.entity_fish.dimension.x / 2,
+		entities.entity_fish.dimension.y / 2
+	);
+
+	if(entities.entity_worm.worm_pos.x < 0) {
+		entities.entity_worm.worm_pos.x = 0;
+		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
+	}
+	if(entities.entity_worm.worm_pos.x > screen_dimension.x) {
+		entities.entity_worm.worm_pos.x = screen_dimension.x - 1;
+		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
+	}
+	if(entities.entity_worm.worm_pos.y < 0) {
+		entities.entity_worm.worm_pos.y = 0;
+		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
+	}
+	if(entities.entity_worm.worm_pos.y > screen_dimension.y) {
+		entities.entity_worm.worm_pos.y = screen_dimension.y - 1;
+		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
 	}
 }
 
