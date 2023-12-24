@@ -38,24 +38,31 @@ Game::~Game() {
 }
 
 bool Game::initialize() {
+	std::stringstream err_msg;
 	if(image_background.loadFromFile(resource_background)) {
-		std::cout << "Successfully loaded dimension of image \"" << resource_background << "\".\n";
+		std::cout << "Successfully loaded image \"" << resource_background << "\".\n";
 	} else {
-		std::cerr << "Could not load dimension of image \"" << resource_background << "\". Error: " << strerror(errno) << "\n";
+		err_msg << "Could not load image \"" << resource_background << "\". Error: " << strerror(errno);
+		std::cerr << err_msg.str() << "\n";
+		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
 		return false;
 	}
 
 	if(entities.entity_fish.image.loadFromFile(resource_fish_up)) {
-		std::cout << "Successfully loaded image dimension of \"" << resource_fish_up << "\".\n";
+		std::cout << "Successfully loaded image \"" << resource_fish_up << "\".\n";
 	} else {
-		std::cerr << "Could not load dimension of image \"" << resource_fish_up << "\". Error: " << strerror(errno) << "\n";
+		err_msg << "Could not load image \"" << resource_fish_up << "\". Error: " << strerror(errno);
+		std::cerr << err_msg.str() << "\n";
+		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
 		return false;
 	}
 
 	if(entities.entity_worm.image.loadFromFile(resource_worm)) {
-		std::cout << "Successfully loaded image dimension of \"" << resource_worm << "\".\n";
+		std::cout << "Successfully loaded image \"" << resource_worm << "\".\n";
 	} else {
-		std::cerr << "Could not load dimension of image \"" << resource_worm << "\". Error: " << strerror(errno) << "\n";
+		err_msg << "Could not load image \"" << resource_worm << "\". Error: " << strerror(errno);
+		std::cerr << err_msg.str() << "\n";
+		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
 		return false;
 	}
 
@@ -84,7 +91,9 @@ bool Game::initialize() {
 	if(font->loadFromFile(resource_font)) {
 		std::cout << "Resource \"" << resource_font << "\" is loaded successfully.\n";
 	} else {
-		std::cerr << "Could not load resource \"" << resource_font << "\". Error: " << strerror(errno) << "\n";
+		err_msg << "Could not load resource \"" << resource_font << "\". Error: " << strerror(errno);
+		std::cerr << err_msg.str() << "\n";
+		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
 		return false;
 	}
 
@@ -99,26 +108,9 @@ bool Game::initialize() {
 	entities.entity_fish.texture = new sf::Texture();
 	entities.entity_worm.texture = new sf::Texture();
 
-	if(background_texture->loadFromImage(image_background)) {
-		std::cout << "Resource \"" << resource_background << "\" is loaded successfully.\n";
-	} else {
-		std::cerr << "Could not load resource \"" << resource_background << "\". Error: " << strerror(errno) << "\n";
-		return false;
-	}
-		
-	if(entities.entity_fish.texture->loadFromImage(entities.entity_fish.image)) {
-		std::cout << "Resource \"" << resource_fish_up << "\" is loaded successfully.\n";
-	} else {
-		std::cerr << "Could not load resource \"" << resource_fish_up << "\". Error: " << strerror(errno) << "\n";
-		return false;
-	}
-
-	if(entities.entity_worm.texture->loadFromImage(entities.entity_worm.image)) {
-		std::cout << "Resource \"" << resource_worm << "\" is loaded successfully.\n";
-	} else {
-		std::cerr << "Could not load resource \"" << resource_worm << "\". Error: " << strerror(errno) << "\n";
-		return false;
-	}
+	background_texture->loadFromImage(image_background);
+	entities.entity_fish.texture->loadFromImage(entities.entity_fish.image);
+	entities.entity_worm.texture->loadFromImage(entities.entity_worm.image);
 
 	background_sprite = new sf::Sprite(*background_texture);
 	entities.entity_fish.shape->setTexture(*&entities.entity_fish.texture);
@@ -133,7 +125,9 @@ bool Game::initialize() {
 	if(entities.entity_fish.sound_buffer->loadFromFile(resource_pou_eating)) {
 		std::cout << "Resource \"" << resource_pou_eating << "\" is loaded successfully.\n";
 	} else {
-		std::cerr << "Could not load resource \"" << resource_pou_eating << "\". Error: " << strerror(errno) << "\n";
+		err_msg << "Could not load resource \"" << resource_pou_eating << "\". Error: " << strerror(errno);
+		std::cerr << err_msg.str() << "\n";
+		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
 		return false;
 	}
 	

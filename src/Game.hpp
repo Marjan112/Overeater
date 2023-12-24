@@ -5,12 +5,20 @@
 #	include "../include/SFML_Linux/Graphics.hpp"
 #	include "../include/SFML_Linux/Audio.hpp"
 #elif defined(_MSC_VER)
+#	include <windows.h>
+
 #	include "../include/SFML_MSC_Windows/Graphics.hpp"
 #	include "../include/SFML_MSC_Windows/Audio.hpp"
 #endif
 
 #include "resources.hpp"
 #include "GameEntities.hpp"
+
+#if defined(_MSC_VER)
+#define SHOW_MSG_BOX(window_handle, error_msg) MessageBoxA(window_handle, error_msg, "Error!", MB_OK)
+#elif defined(__linux__)
+#define SHOW_MSG_BOX(window_handle, error_msg)
+#endif
 
 #define DEFAULT_FISH_MOV_SPEED 700.f
 
