@@ -93,10 +93,7 @@ bool Game::initialize() {
 	score_text = new sf::Text("Score: " + std::to_string(score), *font, 50);
 	score_text->setFillColor(sf::Color::Cyan);
 	score_text->setStyle(sf::Text::Bold);
-	score_text->setPosition(
-		10,
-		10
-	);
+	score_text->setPosition(10, 10);
 
 	background_texture = new sf::Texture();
 	entities.entity_fish.texture = new sf::Texture();
@@ -215,10 +212,6 @@ void Game::check_collision() {
 		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
 	}
 
-	entities.entity_fish.shape->setOrigin(
-		entities.entity_fish.dimension.x,
-		entities.entity_fish.dimension.y
-	);
 	if(entities.entity_fish.fish_pos.x < 0) {
 		entities.entity_fish.fish_pos.x = 0;
 		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
@@ -235,17 +228,13 @@ void Game::check_collision() {
 		entities.entity_fish.fish_pos.y = screen_dimension.y;
 		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
 	}
-	entities.entity_fish.shape->setOrigin(
-		entities.entity_fish.dimension.x / 2,
-		entities.entity_fish.dimension.y / 2
-	);
 
 	if(entities.entity_worm.worm_pos.x < 0) {
 		entities.entity_worm.worm_pos.x = 0;
 		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
 	}
 	if(entities.entity_worm.worm_pos.x > screen_dimension.x) {
-		entities.entity_worm.worm_pos.x = screen_dimension.x - 1;
+		entities.entity_worm.worm_pos.x = screen_dimension.x;
 		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
 	}
 	if(entities.entity_worm.worm_pos.y < 0) {
@@ -253,7 +242,7 @@ void Game::check_collision() {
 		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
 	}
 	if(entities.entity_worm.worm_pos.y > screen_dimension.y) {
-		entities.entity_worm.worm_pos.y = screen_dimension.y - 1;
+		entities.entity_worm.worm_pos.y = screen_dimension.y;
 		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
 	}
 }
