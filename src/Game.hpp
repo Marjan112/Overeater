@@ -47,7 +47,7 @@ private:
 
 	sf::Font* font;
 	sf::Text* score_text;
-	int score;
+	unsigned int score;
 
 	sf::Texture* background_texture;
 	sf::Sprite* background_sprite;
