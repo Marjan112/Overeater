@@ -44,7 +44,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load image \"" << resource_background << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
+		SHOW_MSG_BOX(err_msg.str().c_str());
 		return false;
 	}
 
@@ -53,7 +53,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load image \"" << resource_fish_up << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
+		SHOW_MSG_BOX(err_msg.str().c_str());
 		return false;
 	}
 
@@ -62,7 +62,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load image \"" << resource_worm << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
+		SHOW_MSG_BOX(err_msg.str().c_str());
 		return false;
 	}
 
@@ -93,7 +93,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_font << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
+		SHOW_MSG_BOX(err_msg.str().c_str());
 		return false;
 	}
 
@@ -127,7 +127,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_pou_eating << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(window->getSystemHandle(), err_msg.str().c_str());
+		SHOW_MSG_BOX(err_msg.str().c_str());
 		return false;
 	}
 	
