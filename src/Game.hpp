@@ -17,8 +17,8 @@
 #include "GameEntities.hpp"
 
 #if defined(_MSC_VER)
-#define SHOW_MSG_BOX(error_msg) MessageBoxA(nullptr, error_msg, "Error!", MB_OK)
-#elif defined(__linux__)
+#define SHOW_MSG_BOX(error_msg) MessageBoxA(nullptr, error_msg, "Error!", MB_ICONERROR | MB_OK)
+#else
 #define SHOW_MSG_BOX(error_msg)
 #endif
 
