@@ -40,27 +40,27 @@ Game::~Game() {
 bool Game::initialize() {
 	std::stringstream err_msg;
 	if(image_background.loadFromFile(resource_background)) {
-		std::cout << "Successfully loaded image \"" << resource_background << "\".\n";
+		std::cout << "Resource \"" << resource_background << "\" is loaded successfully.\n";
 	} else {
-		err_msg << "Could not load image \"" << resource_background << "\". Error: " << strerror(errno);
+		err_msg << "Could not load resource \"" << resource_background << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
 		SHOW_MSG_BOX(err_msg.str().c_str());
 		return false;
 	}
 
 	if(entities.entity_fish.image.loadFromFile(resource_fish_up)) {
-		std::cout << "Successfully loaded image \"" << resource_fish_up << "\".\n";
+		std::cout << "Resource \"" << resource_fish_up << "\" is loaded successfully.\n";
 	} else {
-		err_msg << "Could not load image \"" << resource_fish_up << "\". Error: " << strerror(errno);
+		err_msg << "Could not load resource \"" << resource_fish_up << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
 		SHOW_MSG_BOX(err_msg.str().c_str());
 		return false;
 	}
 
 	if(entities.entity_worm.image.loadFromFile(resource_worm)) {
-		std::cout << "Successfully loaded image \"" << resource_worm << "\".\n";
+		std::cout << "Resource \"" << resource_worm << "\" is loaded successfully.\n";
 	} else {
-		err_msg << "Could not load image \"" << resource_worm << "\". Error: " << strerror(errno);
+		err_msg << "Could not load resource \"" << resource_worm << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
 		SHOW_MSG_BOX(err_msg.str().c_str());
 		return false;
