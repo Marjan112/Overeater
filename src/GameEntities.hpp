@@ -1,10 +1,7 @@
-#if defined(__linux__)
-#	include "../include/SFML_Linux/Graphics.hpp"
-#	include "../include/SFML_Linux/Audio.hpp"
-#elif defined(_MSC_VER)
-#	include "../include/SFML_MSC_Windows/Graphics.hpp"
-#	include "../include/SFML_MSC_Windows/Audio.hpp"
-#endif
+#pragma once
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 struct GameEntityFish {
 	float mov_speed;
