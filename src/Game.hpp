@@ -1,32 +1,19 @@
+#pragma once
+
 #include <iostream>
 #include <random>
-
-#if defined(__linux__)
-#	include "../include/SFML_Linux/Graphics.hpp"
-#	include "../include/SFML_Linux/Audio.hpp"
-#elif defined(_MSC_VER)
-#	include <windows.h>
-#	undef min
-#	undef max
-
-#	include "../include/SFML_MSC_Windows/Graphics.hpp"
-#	include "../include/SFML_MSC_Windows/Audio.hpp"
-#endif
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "resources.hpp"
+#include "msgbox.hpp"
 #include "GameEntities.hpp"
-
-#if defined(_MSC_VER)
-#define SHOW_MSG_BOX(error_msg) MessageBoxA(nullptr, error_msg, "Error!", MB_ICONERROR | MB_OK)
-#else
-#define SHOW_MSG_BOX(error_msg)
-#endif
 
 #define DEFAULT_FISH_MOV_SPEED 700.f
 
 class Game {
 public:
-	Game();
+	Game(int argc, char** agrv);
 	void game_loop();
 	~Game();
 private:
