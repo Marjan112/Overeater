@@ -8,7 +8,9 @@
 #endif
 
 Game::Game(int argc, char** argv) {
+	#if defined(__linux__)
 	gtk_init(&argc, &argv);
+	#endif
 	#if !defined(DEBUG)
 	sf::err().rdbuf(nullptr);
 	#endif
