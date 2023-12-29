@@ -10,7 +10,7 @@
 
 void show_msg_box(const std::string& error_msg) {
     #if defined(_MSC_VER)
-    MessageBoxA(nullptr, error_msg, nullptr, MB_ICONERROR | MB_OK);
+    MessageBoxA(nullptr, error_msg.c_str(), nullptr, MB_ICONERROR | MB_OK);
 	#elif defined(__linux__)
 	GtkWidget* dialog = gtk_message_dialog_new(
 		nullptr,
