@@ -3,7 +3,12 @@
 #include <cstring>
 #include <sstream>
 
-Game::Game() {
+#if defined(__linux__)
+#	include <gtk/gtk.h>
+#endif
+
+Game::Game(int argc, char** argv) {
+	gtk_init(&argc, &argv);
 	#if !defined(DEBUG)
 	sf::err().rdbuf(nullptr);
 	#endif
@@ -44,7 +49,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_background << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(err_msg.str().c_str());
+		show_msg_box(err_msg.str());
 		return false;
 	}
 
@@ -53,7 +58,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_fish_up << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(err_msg.str().c_str());
+		show_msg_box(err_msg.str());
 		return false;
 	}
 
@@ -62,7 +67,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_worm << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(err_msg.str().c_str());
+		show_msg_box(err_msg.str());
 		return false;
 	}
 
@@ -93,7 +98,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_font << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(err_msg.str().c_str());
+		show_msg_box(err_msg.str());
 		return false;
 	}
 
@@ -127,7 +132,7 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_pou_eating << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		SHOW_MSG_BOX(err_msg.str().c_str());
+		show_msg_box(err_msg.str());
 		return false;
 	}
 	
