@@ -13,7 +13,7 @@
 
 class Game {
 public:
-	Game(int argc, char** agrv);
+	Game();
 	void game_loop();
 	~Game();
 private:

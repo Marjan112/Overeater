@@ -8,7 +8,7 @@
 
 #include "Game.hpp"
 
-int main(int argc, char** argv) {
-	Game(argc, argv).game_loop();
+int main() {
+	Game().game_loop();
 	return 0;
 }

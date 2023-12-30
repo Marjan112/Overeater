@@ -7,9 +7,9 @@
 #	include <gtk/gtk.h>
 #endif
 
-Game::Game(int argc, char** argv) {
+Game::Game() {
 	#if defined(__linux__)
-	gtk_init(&argc, &argv);
+	gtk_init(nullptr, nullptr);
 	#endif
 	#if !defined(DEBUG)
 	sf::err().rdbuf(nullptr);
