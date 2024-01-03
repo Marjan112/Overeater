@@ -1,11 +1,15 @@
 #include "Game.hpp"
 
-#include <cstring>
+#include <iostream>
 #include <sstream>
+#include <cstring>
 
 #if defined(__linux__)
 #	include <gtk/gtk.h>
 #endif
+
+#include "resources.hpp"
+#include "msgbox.hpp"
 
 Game::Game() {
 	#if defined(__linux__)

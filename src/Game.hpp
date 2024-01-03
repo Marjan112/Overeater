@@ -1,12 +1,9 @@
 #pragma once
 
-#include <iostream>
 #include <random>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "resources.hpp"
-#include "msgbox.hpp"
 #include "GameEntities.hpp"
 
 #define DEFAULT_FISH_MOV_SPEED 700.f
