@@ -17,7 +17,7 @@ private:
 	bool initialize();
 	void restart();
 	void handle_events();
-	void handle_keyword();
+	void handle_keyboard();
 	void check_collision();
 	void render();
 	void destroy();
