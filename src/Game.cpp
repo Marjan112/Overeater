@@ -33,7 +33,7 @@ void Game::game_loop() {
 		entities.entity_fish.fish_pos = entities.entity_fish.shape->getPosition();
 
 		handle_events();
-		handle_keyword();
+		handle_keyboard();
 
 		entities.entity_fish.shape->move(entities.entity_fish.velocity);
 
@@ -93,10 +93,7 @@ bool Game::initialize() {
 		entities.entity_worm.dimension.y
 	));
 	
-	start_pos = sf::Vector2f(
-		screen_dimension.x / 2 - entities.entity_fish.dimension.x / 2,
-		screen_dimension.y / 2 - entities.entity_fish.dimension.y / 2
-	);
+	start_pos = sf::Vector2f(screen_dimension.x / 2, screen_dimension.y / 2);
 	
 	font = new sf::Font();
 	if(font->loadFromFile(resource_font)) {
@@ -168,9 +165,9 @@ void Game::restart() {
 	std::cout << "Restarting the game...\n";
 
 	destroy();
-	if(!initialize()) {
+	is_initialized = initialize();
+	if(is_initialized == false) {
 		std::cerr << "Could not initialize game.\n";
-		exit(1);
 	}
 }
 
@@ -186,7 +183,7 @@ void Game::handle_events() {
 	}
 }
 
-void Game::handle_keyword() {
+void Game::handle_keyboard() {
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
 		entities.entity_fish.shape->setRotation(-90.f);
 		entities.entity_fish.velocity.x += -entities.entity_fish.mov_speed * delta_time;
