@@ -83,19 +83,37 @@ bool Game::initialize() {
 
 	video_mode = sf::VideoMode(screen_dimension.x, screen_dimension.y);
 	window = new sf::RenderWindow(video_mode, "Overeater", sf::Style::Close);
+	if(window == nullptr) {
+		std::cerr << "Could not allocate memory for window.\n";
+		return false;
+	}
 
 	entities.entity_fish.shape = new sf::RectangleShape(sf::Vector2f(
 		entities.entity_fish.dimension.x,
 		entities.entity_fish.dimension.y
 	));
+	if(entities.entity_fish.shape == nullptr) {
+		std::cerr << "Could not allocate memory for fish shape.\n";
+		return false;
+	}
+
 	entities.entity_worm.shape = new sf::RectangleShape(sf::Vector2f(
 		entities.entity_worm.dimension.x,
 		entities.entity_worm.dimension.y
 	));
+	if(entities.entity_worm.shape == nullptr) {
+		std::cerr << "Could not allocate memory for worm shape.\n";
+		return false;
+	}
 	
 	start_pos = sf::Vector2f(screen_dimension.x / 2, screen_dimension.y / 2);
 	
 	font = new sf::Font();
+	if(font == nullptr) {
+		std::cerr << "Could not allocate memory for font.\n";
+		return false;
+	}
+
 	if(font->loadFromFile(resource_font)) {
 		std::cout << "Resource \"" << resource_font << "\" is loaded successfully.\n";
 	} else {
@@ -108,19 +126,43 @@ bool Game::initialize() {
 	score = 0;
 
 	score_text = new sf::Text("Score: " + std::to_string(score), *font, 50);
+	if(score_text == nullptr) {
+		std::cerr << "Could not allocate memory for score text.\n";
+		return false;
+	}
+
 	score_text->setFillColor(sf::Color::Cyan);
 	score_text->setStyle(sf::Text::Bold);
 	score_text->setPosition(10, 10);
 
 	background_texture = new sf::Texture();
+	if(background_texture == nullptr) {
+		std::cerr << "Could not allocate memory for background texture.\n";
+		return false;
+	}
+
 	entities.entity_fish.texture = new sf::Texture();
+	if(entities.entity_fish.texture == nullptr) {
+		std::cerr << "Could not allocate memory for fish entity.\n";
+		return false;
+	}
+
 	entities.entity_worm.texture = new sf::Texture();
+	if(entities.entity_worm.texture == nullptr) {
+		std::cerr << "Could not allocate memory for worm entity.\n";
+		return false;
+	}
 
 	background_texture->loadFromImage(image_background);
 	entities.entity_fish.texture->loadFromImage(entities.entity_fish.image);
 	entities.entity_worm.texture->loadFromImage(entities.entity_worm.image);
 
 	background_sprite = new sf::Sprite(*background_texture);
+	if(background_sprite == nullptr) {
+		std::cerr << "Could not allocate memory for background sprite.\n";
+		return false;
+	}
+
 	entities.entity_fish.shape->setTexture(*&entities.entity_fish.texture);
 	entities.entity_fish.shape->setOrigin(
 		entities.entity_fish.dimension.x / 2,
@@ -129,6 +171,10 @@ bool Game::initialize() {
 	entities.entity_fish.shape->setPosition(start_pos);
 
 	entities.entity_fish.sound_buffer = new sf::SoundBuffer();
+	if(entities.entity_fish.sound_buffer == nullptr) {
+		std::cerr << "Could not allocate memory for fish sound buffer.\n";
+		return false;
+	}
 
 	if(entities.entity_fish.sound_buffer->loadFromFile(resource_pou_eating)) {
 		std::cout << "Resource \"" << resource_pou_eating << "\" is loaded successfully.\n";
@@ -140,6 +186,11 @@ bool Game::initialize() {
 	}
 	
 	entities.entity_fish.eating_sound = new sf::Sound(*entities.entity_fish.sound_buffer);
+	if(entities.entity_fish.eating_sound == nullptr) {
+		std::cerr << "Could not allocate memory for fish eating sound.\n";
+		return false;
+	}
+
 	entities.entity_fish.eating_sound->setVolume(50);
 
 	from_0_to_width = std::uniform_real_distribution<float>(0.f, screen_dimension.x);
