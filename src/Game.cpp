@@ -235,22 +235,24 @@ void Game::handle_events() {
 }
 
 void Game::handle_keyboard() {
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-		entities.entity_fish.shape->setRotation(-90.f);
-		entities.entity_fish.velocity.x += -entities.entity_fish.mov_speed * delta_time;
-	} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-		entities.entity_fish.shape->setRotation(90.f);
-		entities.entity_fish.velocity.x += entities.entity_fish.mov_speed * delta_time;
-	} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-		entities.entity_fish.shape->setRotation(0.f);
-		entities.entity_fish.velocity.y += -entities.entity_fish.mov_speed * delta_time;
-	} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-		entities.entity_fish.shape->setRotation(-180.f);
-		entities.entity_fish.velocity.y += entities.entity_fish.mov_speed * delta_time;
-	} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
-		restart();
-	} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
-		window->close();
+	if(window->hasFocus()) {
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+			entities.entity_fish.shape->setRotation(-90.f);
+			entities.entity_fish.velocity.x += -entities.entity_fish.mov_speed * delta_time;
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+			entities.entity_fish.shape->setRotation(90.f);
+			entities.entity_fish.velocity.x += entities.entity_fish.mov_speed * delta_time;
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+			entities.entity_fish.shape->setRotation(0.f);
+			entities.entity_fish.velocity.y += -entities.entity_fish.mov_speed * delta_time;
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+			entities.entity_fish.shape->setRotation(-180.f);
+			entities.entity_fish.velocity.y += entities.entity_fish.mov_speed * delta_time;
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
+			restart();
+		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
+			window->close();
+		}
 	}
 }
 
