@@ -4,7 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "GameEntities.hpp"
+#include "Fish.hpp"
+#include "Worm.hpp"
 
 #define DEFAULT_FISH_MOV_SPEED 700.f
 
@@ -30,7 +31,9 @@ private:
 	sf::Clock delta_clock;
 	float delta_time;
 
-	GameEntities entities;
+	Fish fish;
+	Worm worm;
+	
 	sf::Vector2f start_pos;
 	
 	sf::Image image_background;

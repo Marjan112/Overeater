@@ -29,13 +29,13 @@ Game::Game() {
 void Game::game_loop() {
 	while(is_initialized == true && window->isOpen()) {
 		delta_time = delta_clock.restart().asSeconds();
-		entities.entity_fish.velocity = sf::Vector2f(0, 0);
-		entities.entity_fish.fish_pos = entities.entity_fish.shape->getPosition();
+		fish.velocity = sf::Vector2f(0, 0);
+		fish.position = fish.shape->getPosition();
 
 		handle_events();
 		handle_keyboard();
 
-		entities.entity_fish.shape->move(entities.entity_fish.velocity);
+		fish.shape->move(fish.velocity);
 
 		check_collision();
 		render();
@@ -43,9 +43,7 @@ void Game::game_loop() {
 }
 
 Game::~Game() {
-	if(is_initialized == true) {
-		destroy();
-	}
+	destroy();
 }
 
 bool Game::initialize() {
@@ -59,7 +57,7 @@ bool Game::initialize() {
 		return false;
 	}
 
-	if(entities.entity_fish.image.loadFromFile(resource_fish_up)) {
+	if(fish.image.loadFromFile(resource_fish_up)) {
 		std::cout << "Resource \"" << resource_fish_up << "\" is loaded successfully.\n";
 	} else {
 		err_msg << "Could not load resource \"" << resource_fish_up << "\". Error: " << strerror(errno);
@@ -68,7 +66,7 @@ bool Game::initialize() {
 		return false;
 	}
 
-	if(entities.entity_worm.image.loadFromFile(resource_worm)) {
+	if(worm.image.loadFromFile(resource_worm)) {
 		std::cout << "Resource \"" << resource_worm << "\" is loaded successfully.\n";
 	} else {
 		err_msg << "Could not load resource \"" << resource_worm << "\". Error: " << strerror(errno);
@@ -78,8 +76,8 @@ bool Game::initialize() {
 	}
 
 	screen_dimension = image_background.getSize();
-	entities.entity_fish.dimension = entities.entity_fish.image.getSize();
-	entities.entity_worm.dimension = entities.entity_worm.image.getSize();
+	fish.dimension = fish.image.getSize();
+	worm.dimension = worm.image.getSize();
 
 	video_mode = sf::VideoMode(screen_dimension.x, screen_dimension.y);
 	window = new sf::RenderWindow(video_mode, "Overeater", sf::Style::Close);
@@ -88,20 +86,20 @@ bool Game::initialize() {
 		return false;
 	}
 
-	entities.entity_fish.shape = new sf::RectangleShape(sf::Vector2f(
-		entities.entity_fish.dimension.x,
-		entities.entity_fish.dimension.y
+	fish.shape = new sf::RectangleShape(sf::Vector2f(
+		fish.dimension.x,
+		fish.dimension.y
 	));
-	if(entities.entity_fish.shape == nullptr) {
+	if(fish.shape == nullptr) {
 		std::cerr << "Could not allocate memory for fish shape.\n";
 		return false;
 	}
 
-	entities.entity_worm.shape = new sf::RectangleShape(sf::Vector2f(
-		entities.entity_worm.dimension.x,
-		entities.entity_worm.dimension.y
+	worm.shape = new sf::RectangleShape(sf::Vector2f(
+		worm.dimension.x,
+		worm.dimension.y
 	));
-	if(entities.entity_worm.shape == nullptr) {
+	if(worm.shape == nullptr) {
 		std::cerr << "Could not allocate memory for worm shape.\n";
 		return false;
 	}
@@ -141,21 +139,21 @@ bool Game::initialize() {
 		return false;
 	}
 
-	entities.entity_fish.texture = new sf::Texture();
-	if(entities.entity_fish.texture == nullptr) {
+	fish.texture = new sf::Texture();
+	if(fish.texture == nullptr) {
 		std::cerr << "Could not allocate memory for fish entity.\n";
 		return false;
 	}
 
-	entities.entity_worm.texture = new sf::Texture();
-	if(entities.entity_worm.texture == nullptr) {
+	worm.texture = new sf::Texture();
+	if(worm.texture == nullptr) {
 		std::cerr << "Could not allocate memory for worm entity.\n";
 		return false;
 	}
 
 	background_texture->loadFromImage(image_background);
-	entities.entity_fish.texture->loadFromImage(entities.entity_fish.image);
-	entities.entity_worm.texture->loadFromImage(entities.entity_worm.image);
+	fish.texture->loadFromImage(fish.image);
+	worm.texture->loadFromImage(worm.image);
 
 	background_sprite = new sf::Sprite(*background_texture);
 	if(background_sprite == nullptr) {
@@ -163,20 +161,20 @@ bool Game::initialize() {
 		return false;
 	}
 
-	entities.entity_fish.shape->setTexture(*&entities.entity_fish.texture);
-	entities.entity_fish.shape->setOrigin(
-		entities.entity_fish.dimension.x / 2,
-		entities.entity_fish.dimension.y / 2
+	fish.shape->setTexture(*&fish.texture);
+	fish.shape->setOrigin(
+		fish.dimension.x / 2,
+		fish.dimension.y / 2
 	);
-	entities.entity_fish.shape->setPosition(start_pos);
+	fish.shape->setPosition(start_pos);
 
-	entities.entity_fish.sound_buffer = new sf::SoundBuffer();
-	if(entities.entity_fish.sound_buffer == nullptr) {
+	fish.sound_buffer = new sf::SoundBuffer();
+	if(fish.sound_buffer == nullptr) {
 		std::cerr << "Could not allocate memory for fish sound buffer.\n";
 		return false;
 	}
 
-	if(entities.entity_fish.sound_buffer->loadFromFile(resource_pou_eating)) {
+	if(fish.sound_buffer->loadFromFile(resource_pou_eating)) {
 		std::cout << "Resource \"" << resource_pou_eating << "\" is loaded successfully.\n";
 	} else {
 		err_msg << "Could not load resource \"" << resource_pou_eating << "\". Error: " << strerror(errno);
@@ -185,29 +183,29 @@ bool Game::initialize() {
 		return false;
 	}
 	
-	entities.entity_fish.eating_sound = new sf::Sound(*entities.entity_fish.sound_buffer);
-	if(entities.entity_fish.eating_sound == nullptr) {
+	fish.sound = new sf::Sound(*fish.sound_buffer);
+	if(fish.sound == nullptr) {
 		std::cerr << "Could not allocate memory for fish eating sound.\n";
 		return false;
 	}
 
-	entities.entity_fish.eating_sound->setVolume(50);
+	fish.sound->setVolume(50);
 
 	from_0_to_width = std::uniform_real_distribution<float>(0.f, screen_dimension.x);
 	from_0_to_height = std::uniform_real_distribution<float>(0.f, screen_dimension.y);
 
-	entities.entity_worm.worm_pos = sf::Vector2f(from_0_to_width(random_generator), from_0_to_height(random_generator));
+	worm.position = sf::Vector2f(from_0_to_width(random_generator), from_0_to_height(random_generator));
 	
-	entities.entity_worm.shape->setTexture(*&entities.entity_worm.texture);
-	entities.entity_worm.shape->setOrigin(
-		entities.entity_worm.dimension.x / 2,
-		entities.entity_worm.dimension.y / 2
+	worm.shape->setTexture(*&worm.texture);
+	worm.shape->setOrigin(
+		worm.dimension.x / 2,
+		worm.dimension.y / 2
 	);
-	entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
+	worm.shape->setPosition(worm.position);
 	
 	window->setFramerateLimit(60);
 
-	entities.entity_fish.mov_speed = DEFAULT_FISH_MOV_SPEED;
+	fish.mov_speed = DEFAULT_FISH_MOV_SPEED;
 		
 	return true;
 }
@@ -237,17 +235,17 @@ void Game::handle_events() {
 void Game::handle_keyboard() {
 	if(window->hasFocus()) {
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-			entities.entity_fish.shape->setRotation(-90.f);
-			entities.entity_fish.velocity.x += -entities.entity_fish.mov_speed * delta_time;
+			fish.shape->setRotation(-90.f);
+			fish.velocity.x += -fish.mov_speed * delta_time;
 		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-			entities.entity_fish.shape->setRotation(90.f);
-			entities.entity_fish.velocity.x += entities.entity_fish.mov_speed * delta_time;
+			fish.shape->setRotation(90.f);
+			fish.velocity.x += fish.mov_speed * delta_time;
 		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-			entities.entity_fish.shape->setRotation(0.f);
-			entities.entity_fish.velocity.y += -entities.entity_fish.mov_speed * delta_time;
+			fish.shape->setRotation(0.f);
+			fish.velocity.y += -fish.mov_speed * delta_time;
 		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-			entities.entity_fish.shape->setRotation(-180.f);
-			entities.entity_fish.velocity.y += entities.entity_fish.mov_speed * delta_time;
+			fish.shape->setRotation(-180.f);
+			fish.velocity.y += fish.mov_speed * delta_time;
 		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R)) {
 			restart();
 		} else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
@@ -257,48 +255,48 @@ void Game::handle_keyboard() {
 }
 
 void Game::check_collision() {
-	if(entities.entity_fish.shape->getGlobalBounds().intersects(entities.entity_worm.shape->getGlobalBounds())) {
-		entities.entity_fish.eating_sound->play();
-		entities.entity_worm.worm_pos = sf::Vector2f(
+	if(fish.shape->getGlobalBounds().intersects(worm.shape->getGlobalBounds())) {
+		fish.sound->play();
+		worm.position = sf::Vector2f(
 			from_0_to_width(random_generator),
 			from_0_to_height(random_generator)
 		);
 		score_text->setString("Score: " + std::to_string(++score));
-		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
+		worm.shape->setPosition(worm.position);
+	}
+	
+	if(fish.position.x < 0) {
+		fish.position.x = 0;
+		fish.shape->setPosition(fish.position);
+	}
+	if(fish.position.x > screen_dimension.x) {
+		fish.position.x = screen_dimension.x;
+		fish.shape->setPosition(fish.position);
+	}
+	if(fish.position.y < 0) {
+		fish.position.y = 0;
+		fish.shape->setPosition(fish.position);
+	}
+	if(fish.position.y > screen_dimension.y) {
+		fish.position.y = screen_dimension.y;
+		fish.shape->setPosition(fish.position);
 	}
 
-	if(entities.entity_fish.fish_pos.x < 0) {
-		entities.entity_fish.fish_pos.x = 0;
-		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
+	if(worm.position.x < 0) {
+		worm.position.x = 0;
+		worm.shape->setPosition(worm.position);
 	}
-	if(entities.entity_fish.fish_pos.x > screen_dimension.x) {
-		entities.entity_fish.fish_pos.x = screen_dimension.x;
-		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
+	if(worm.position.x > screen_dimension.x) {
+		worm.position.x = screen_dimension.x;
+		worm.shape->setPosition(worm.position);
 	}
-	if(entities.entity_fish.fish_pos.y < 0) {
-		entities.entity_fish.fish_pos.y = 0;
-		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
+	if(worm.position.y < 0) {
+		worm.position.y = 0;
+		worm.shape->setPosition(worm.position);
 	}
-	if(entities.entity_fish.fish_pos.y > screen_dimension.y) {
-		entities.entity_fish.fish_pos.y = screen_dimension.y;
-		entities.entity_fish.shape->setPosition(entities.entity_fish.fish_pos);
-	}
-
-	if(entities.entity_worm.worm_pos.x < 0) {
-		entities.entity_worm.worm_pos.x = 0;
-		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
-	}
-	if(entities.entity_worm.worm_pos.x > screen_dimension.x) {
-		entities.entity_worm.worm_pos.x = screen_dimension.x;
-		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
-	}
-	if(entities.entity_worm.worm_pos.y < 0) {
-		entities.entity_worm.worm_pos.y = 0;
-		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
-	}
-	if(entities.entity_worm.worm_pos.y > screen_dimension.y) {
-		entities.entity_worm.worm_pos.y = screen_dimension.y;
-		entities.entity_worm.shape->setPosition(entities.entity_worm.worm_pos);
+	if(worm.position.y > screen_dimension.y) {
+		worm.position.y = screen_dimension.y;
+		worm.shape->setPosition(worm.position);
 	}
 }
 
@@ -306,21 +304,21 @@ void Game::render() {
 	window->clear();
 	window->draw(*background_sprite);
 	window->draw(*score_text);
-	window->draw(*entities.entity_fish.shape);
-	window->draw(*entities.entity_worm.shape);
+	window->draw(*fish.shape);
+	window->draw(*worm.shape);
 	window->display();
 }
 
 void Game::destroy() {
 	delete window;
-	delete entities.entity_fish.shape;
-	delete entities.entity_worm.shape;
+	delete fish.shape;
+	delete worm.shape;
 	delete font;
 	delete score_text;
 	delete background_texture;
-	delete entities.entity_fish.texture;
-	delete entities.entity_worm.texture;
+	delete fish.texture;
+	delete worm.texture;
 	delete background_sprite;
-	delete entities.entity_fish.sound_buffer;
-	delete entities.entity_fish.eating_sound;
+	delete fish.sound_buffer;
+	delete fish.sound;
 }
