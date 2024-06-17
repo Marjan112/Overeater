@@ -4,20 +4,14 @@
 #include <sstream>
 #include <cstring>
 
-#if defined(__linux__)
-#	include <gtk/gtk.h>
+#if defined(_MSC_VER)
+#include <Windows.h>
 #endif
 
 #include "resources.hpp"
-#include "msgbox.hpp"
 
 Game::Game() {
-	#if defined(__linux__)
-	gtk_init(nullptr, nullptr);
-	#endif
-	#if !defined(DEBUG)
 	sf::err().rdbuf(nullptr);
-	#endif
 	is_initialized = initialize();
 	if(is_initialized == false) {
 		std::cerr << "Could not initialize game.\n";
@@ -53,7 +47,9 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_background << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		show_msg_box(err_msg.str());
+		#if defined(_MSC_VER)
+		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
+		#endif
 		return false;
 	}
 
@@ -62,7 +58,9 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_fish_up << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		show_msg_box(err_msg.str());
+		#if defined(_MSC_VER)
+		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
+		#endif
 		return false;
 	}
 
@@ -71,7 +69,9 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_worm << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		show_msg_box(err_msg.str());
+		#if defined(_MSC_VER)
+		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
+		#endif
 		return false;
 	}
 
@@ -117,7 +117,9 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_font << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		show_msg_box(err_msg.str());
+		#if defined(_MSC_VER)
+		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
+		#endif
 		return false;
 	}
 
@@ -179,7 +181,9 @@ bool Game::initialize() {
 	} else {
 		err_msg << "Could not load resource \"" << resource_pou_eating << "\". Error: " << strerror(errno);
 		std::cerr << err_msg.str() << "\n";
-		show_msg_box(err_msg.str());
+		#if defined(_MSC_VER)
+		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
+		#endif
 		return false;
 	}
 	
