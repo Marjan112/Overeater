@@ -4,10 +4,6 @@
 #include <sstream>
 #include <cstring>
 
-#if defined(_MSC_VER)
-#include <Windows.h>
-#endif
-
 #include "resources.hpp"
 
 Game::Game() {
@@ -41,39 +37,9 @@ Game::~Game() {
 }
 
 bool Game::initialize() {
-	std::stringstream err_msg;
-	if(image_background.loadFromFile(resource_background)) {
-		std::cout << "Resource \"" << resource_background << "\" is loaded successfully.\n";
-	} else {
-		err_msg << "Could not load resource \"" << resource_background << "\". Error: " << strerror(errno);
-		std::cerr << err_msg.str() << "\n";
-		#if defined(_MSC_VER)
-		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
-		#endif
-		return false;
-	}
-
-	if(fish.image.loadFromFile(resource_fish_up)) {
-		std::cout << "Resource \"" << resource_fish_up << "\" is loaded successfully.\n";
-	} else {
-		err_msg << "Could not load resource \"" << resource_fish_up << "\". Error: " << strerror(errno);
-		std::cerr << err_msg.str() << "\n";
-		#if defined(_MSC_VER)
-		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
-		#endif
-		return false;
-	}
-
-	if(worm.image.loadFromFile(resource_worm)) {
-		std::cout << "Resource \"" << resource_worm << "\" is loaded successfully.\n";
-	} else {
-		err_msg << "Could not load resource \"" << resource_worm << "\". Error: " << strerror(errno);
-		std::cerr << err_msg.str() << "\n";
-		#if defined(_MSC_VER)
-		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
-		#endif
-		return false;
-	}
+	image_background.loadFromMemory(bg_png, bg_png_size);
+	fish.image.loadFromMemory(fish_up_png, fish_up_png_size);
+	worm.image.loadFromMemory(worm_png, worm_png_size);
 
 	screen_dimension = image_background.getSize();
 	fish.dimension = fish.image.getSize();
@@ -112,16 +78,7 @@ bool Game::initialize() {
 		return false;
 	}
 
-	if(font->loadFromFile(resource_font)) {
-		std::cout << "Resource \"" << resource_font << "\" is loaded successfully.\n";
-	} else {
-		err_msg << "Could not load resource \"" << resource_font << "\". Error: " << strerror(errno);
-		std::cerr << err_msg.str() << "\n";
-		#if defined(_MSC_VER)
-		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
-		#endif
-		return false;
-	}
+	font->loadFromMemory(Roboto_Bold_ttf, Roboto_Bold_ttf_size);
 
 	score = 0;
 
@@ -176,16 +133,7 @@ bool Game::initialize() {
 		return false;
 	}
 
-	if(fish.sound_buffer->loadFromFile(resource_pou_eating)) {
-		std::cout << "Resource \"" << resource_pou_eating << "\" is loaded successfully.\n";
-	} else {
-		err_msg << "Could not load resource \"" << resource_pou_eating << "\". Error: " << strerror(errno);
-		std::cerr << err_msg.str() << "\n";
-		#if defined(_MSC_VER)
-		MessageBoxA(nullptr, err_msg.str().c_str(), nullptr, MB_ICONERROR);
-		#endif
-		return false;
-	}
+	fish.sound_buffer->loadFromMemory(pou_eating_wav, pou_eating_wav_size);
 	
 	fish.sound = new sf::Sound(*fish.sound_buffer);
 	if(fish.sound == nullptr) {
