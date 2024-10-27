@@ -5,6 +5,6 @@
 struct Fish : Entity {
 	float mov_speed;
 	sf::Vector2f velocity;
-	sf::SoundBuffer* sound_buffer;
-	sf::Sound* sound;
+	sf::SoundBuffer sound_buffer;
+	sf::Sound sound;
 };
